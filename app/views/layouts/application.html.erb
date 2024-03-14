@@ -10,6 +10,17 @@
     <%= javascript_importmap_tags %>
   </head>
 
+  <nav>
+  <% if user_signed_in? %>
+    <!-- Display user information or sign out link -->
+    Welcome <%= current_user.email %>!
+    <div style="text-align: left; padding-left: 1200px;">
+      <%= link_to 'Sign out',  destroy_user_session_path, method: :delete, width: '70px; height: 30px;', class: 'btn btn-dark' %>
+    </div>
+  <% end %>
+</nav>
+
+
   <body>
     <%= yield %>
   </body>
