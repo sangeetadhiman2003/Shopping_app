@@ -27,9 +27,16 @@
   </div>
 
   <div class="field">
-  <%= form.label :description %>
-  <%= form.text_area :description %>
-</div>
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div>
+      <%= form.label 'Please attached image '%>
+      <div class="col">
+        <%= form.file_field :product_image %>
+      </div>
+  </div>
 
   <div class="actions">
     <%= form.submit %>
