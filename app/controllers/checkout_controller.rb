@@ -1,24 +1,46 @@
 class CheckoutController < ApplicationController
+
   def create
     if @cart.pluck(:currency).uniq.length > 1
-      redirect_to products_path, alert: "You can not select products with different currencies in one checkout"
+      redirect_to products_path, alert: "You cannot select products with different currencies in one checkout."
     else
       customer = Stripe::Customer.create(
-        #name: current_user.name,
         email: current_user.email,
-        description: "Customer id: #{current_user.id}",
+        description: "Customer id: #{current_user.id}"
       )
-      @session = Stripe::Checkout::Session.create({
-        customer: customer,
+
+      line_items = @cart.map do |item|
+        {
+          price_data: {
+            currency: item.currency,
+            product_data: {
+              name: item.name,
+              description: item.description
+            },
+            unit_amount: item.price,
+          },
+          quantity: 1
+        }
+      end
+
+      if line_items.empty?
+        redirect_to products_path, alert: "Your cart is empty."
+        return
+      end
+
+      @session = Stripe::Checkout::Session.create(
+        customer: customer.id,
         payment_method_types: ['card'],
-        line_items: @cart.collect { |item| item.to_builder.attributes! },
+        line_items: line_items,
         allow_promotion_codes: true,
         mode: 'payment',
         success_url: success_url + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: cancel_url,
-      })
-      redirect_to @session.url
+        cancel_url: cancel_url
+      )
+      redirect_to @session.url, allow_other_host: true
+
     end
+
   end
 
   def success
