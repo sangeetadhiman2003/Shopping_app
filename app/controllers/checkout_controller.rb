@@ -24,8 +24,12 @@ class CheckoutController < ApplicationController
       end
 
       if line_items.empty?
-        redirect_to products_path, alert: "Your cart is empty."
-        return
+        product = Product.find(params[:id])
+        price_id = params[:price_id]
+        line_items << {
+          price: price_id,
+          quantity: 1
+        }
       end
 
       @session = Stripe::Checkout::Session.create(
