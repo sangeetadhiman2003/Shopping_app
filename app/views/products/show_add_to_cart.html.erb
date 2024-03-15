@@ -1,0 +1,13 @@
+<div class="shopping-cart-box">
+  <h1>Shopping cart</h1>
+  <% if @cart.present? %>
+    <% @cart.each do |product| %>
+      <%= product.name %><br>
+    <% end %>
+    <%= button_to "Buy now!", checkout_create_path, remote: true, data: { disable_with: "Validating..." },class: 'btn btn-success' %>
+  <% else %>
+    <p>Your cart is empty</p>
+  <% end %>
+</div>
+<br>
+<%= link_to "Back", products_path, class: 'btn btn-dark' %>

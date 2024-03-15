@@ -1,7 +1,13 @@
 Rails.application.routes.draw do
   devise_for :users
   root "products#index"
-  resources :products
+  
+  resources :products do
+    collection do
+      get 'show_add_to_cart'
+    end
+  end
+
   post "checkout/create", to: "checkout#create"
   get "success", to: "checkout#success"
   get "cancel", to: "checkout#cancel"
