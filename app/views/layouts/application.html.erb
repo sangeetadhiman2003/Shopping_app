@@ -14,48 +14,45 @@
 
     <%#= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
-
-  <nav>
-  <% if user_signed_in? %>
-    <!-- Display user information or sign out link -->
-    Welcome <%= current_user.email %>!
-    <br>
-    <%= link_to "All Products", products_path, style: 'width: 205px; height: 40px;', class: 'btn btn-dark'%>
-    <div style="text-align: left; padding-left: 1200px;">
-      <%= link_to 'Sign out',  destroy_user_session_path, method: :delete, width: '70px; height: 30px;', class: 'btn btn-dark' %>
-    </div>
-  <% end %>
-</nav>
-
-
   <body>
     <center>
         <h1>Stripe eCommerce app </h1>
     </center>
-    <% if flash[:notice] %>
-      <div class="alert alert-success">
-        <%= flash[:notice] %>
-      </div>
-    <% end %>
 
-    <% if flash[:alert] %>
-      <div class="alert alert-danger">
-        <%= flash[:alert] %>
+    <% if user_signed_in? %>
+      <!-- Display user information or sign out link -->
+      Welcome <%= current_user.email %>!
+      <br>
+      <%= link_to "All Products", products_path, style: 'width: 205px; height: 40px;', class: 'btn btn-dark'%>
+      <div style="text-align: left; padding-left: 1200px;">
+        <%= link_to 'Sign out',  destroy_user_session_path, method: :delete, width: '70px; height: 30px;', class: 'btn btn-dark' %>
       </div>
-    <% end %>
-    <div class="shopping-cart-box">
-    <h1>Shopping cart</h1>
-    <% if @cart.present? %>
-      <% @cart.each do |product| %>
-        <%= product.name %><br>
+      <div class="shopping-cart-box">
+      <h1>Shopping cart</h1>
+      <% if @cart.present? %>
+        <% @cart.each do |product| %>
+          <%= product.name %><br>
+        <% end %>
+        <%= button_to "Buy now!", checkout_create_path, remote: true, data: { disable_with: "Validating..." }, class: "buy-button" %>
+      <% else %>
+        <p>Your cart is empty</p>
       <% end %>
-      <%= button_to "Buy now!", checkout_create_path, remote: true, data: { disable_with: "Validating..." }, class: "buy-button" %>
-    <% else %>
-      <p>Your cart is empty</p>
-    <% end %>
     <hr>
-  </div>
+    <% end %>
 
-    <%= yield %>
+    <div>
+      <% if flash[:notice] %>
+        <div class="alert alert-success">
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="alert alert-danger">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+    </div>
+   <%= yield %>
   </body>
 </html>
