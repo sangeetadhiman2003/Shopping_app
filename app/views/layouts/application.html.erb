@@ -29,7 +29,10 @@
 
 
   <body>
-      <% if flash[:notice] %>
+    <center>
+        <h1>Stripe eCommerce app </h1>
+    </center>
+    <% if flash[:notice] %>
       <div class="alert alert-success">
         <%= flash[:notice] %>
       </div>
@@ -50,6 +53,7 @@
     <% else %>
       <p>Your cart is empty</p>
     <% end %>
+    <hr>
   </div>
 
     <%= yield %>
