@@ -1,13 +1,31 @@
 class CheckoutController < ApplicationController
 
   def create
-    if @cart.pluck(:currency).uniq.length > 1
-      redirect_to products_path, alert: "You cannot select products with different currencies in one checkout."
+    line_items = []
+
+    customer = Stripe::Customer.create(
+      email: current_user.email,
+      description: "Customer id: #{current_user.id}"
+    )
+
+    if params[:single_product]
+      product = Product.find(params[:id])
+      line_items << {
+        price_data: {
+          currency: product.currency,
+          product_data: {
+            name: product.name,
+            description: product.description,
+          },
+          unit_amount: product.price,
+        },
+        quantity: 1,
+      }
     else
-      customer = Stripe::Customer.create(
-        email: current_user.email,
-        description: "Customer id: #{current_user.id}"
-      )
+
+      if @cart.pluck(:currency).uniq.length > 1
+        redirect_to products_path, alert: "You cannot select products with different currencies in one checkout."
+      end
 
       line_items = @cart.map do |item|
         {
@@ -22,28 +40,18 @@ class CheckoutController < ApplicationController
           quantity: 1
         }
       end
-
-      if line_items.empty?
-        product = Product.find(params[:id])
-        price_id = params[:price_id]
-        line_items << {
-          price: price_id,
-          quantity: 1
-        }
-      end
-
-      @session = Stripe::Checkout::Session.create(
-        customer: customer.id,
-        payment_method_types: ['card'],
-        line_items: line_items,
-        allow_promotion_codes: true,
-        mode: 'payment',
-        success_url: success_url + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: cancel_url
-      )
-      redirect_to @session.url, allow_other_host: true
-
     end
+
+    @session = Stripe::Checkout::Session.create(
+      customer: customer.id,
+      payment_method_types: ['card'],
+      line_items: line_items,
+      allow_promotion_codes: true,
+      mode: 'payment',
+      success_url: success_url + "?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: cancel_url
+    )
+    redirect_to @session.url, allow_other_host: true
 
   end
 
