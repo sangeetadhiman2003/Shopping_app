@@ -1,34 +1,37 @@
-<% @products.each do |product| %>
+<center>
   <div class="card mb-3" style="max-width: 640px;">
-    <div class="row g-0">
-      <div class="col-md-4 d-flex align-items-center justify-content-center">
-        <% if product&.product_image&.attached? %>
-          <%= image_tag product.product_image, height: 200, width: 150, class: 'img-fluid' %>
-        <% end %>
-        <div class="button-group" style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 10px;">
-          <%= link_to 'Show', product, class: 'btn btn-dark' %>
-          <%= link_to 'Edit', edit_product_path(product), class: 'btn btn-dark' %>
+    <% @products.each do |product| %>
+      <div class="row g-0">
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+          <% if product&.product_image&.attached? %>
+            <%= image_tag product.product_image, height: 200, width: 150, class: 'img-fluid' %>
+          <% end %>
+          <div class="button-group" style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 10px;">
+            <%= link_to 'Show', product, class: 'btn btn-dark' %>
+            <%= link_to 'Edit', edit_product_path(product), class: 'btn btn-dark' %>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title"><%= product.name %></h5>
+            <p class="card-text">Name: <%= product.name %></p>
+            <p class="card-text">Currency: <%= product.currency %></p>
+            <p class="card-text">Price: <%= product.price %></p>
+            <p class="card-text">Sales: <%= product.price_cents %></p>
+            <p class="card-text">Description: <%= product.description %></p>
+            <p class="card-text">
+              <% if @cart.present? && @cart.include?(product) %>
+                <%= button_to "Remove from cart", remove_from_cart_path(product), method: :delete, class: 'btn btn-warning' %>
+              <% else %>
+                <%= button_to "Add to cart", add_to_cart_path(product), class: 'btn btn-success' %>
+              <% end %>
+            </p>
+            <p class="card-text">
+            <%= button_to "Buy now!", checkout_create_path(price_id: product.stripe_price_id), remote: true, data: { turbo: false }, params: { id: product.id, single_product: true}, class: 'btn btn-success' %>
+            </p>
         </div>
       </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title"><%= product.name %></h5>
-          <p class="card-text">Name: <%= product.name %></p>
-          <p class="card-text">Currency: <%= product.currency %></p>
-          <p class="card-text">Price: <%= product.price %></p>
-          <p class="card-text">Sales: <%= product.price_cents %></p>
-          <p class="card-text">Description: <%= product.description %></p>
-          <p class="card-text">
-            <% if @cart.present? && @cart.include?(product) %>
-              <%= button_to "Remove from cart", remove_from_cart_path(product), method: :delete, class: 'btn btn-warning' %>
-            <% else %>
-              <%= button_to "Add to cart", add_to_cart_path(product), class: 'btn btn-success' %>
-            <% end %>
-          </p>
-          <p class="card-text">
-          <%= button_to "Buy now!", checkout_create_path(price_id: product.stripe_price_id), remote: true, data: { turbo: false }, params: { id: product.id }, class: 'btn btn-success' %>
-          </p>
-      </div>
-    </div>
+      <% end %>
+      <br>
   </div>
-<% end %>
+</center>
